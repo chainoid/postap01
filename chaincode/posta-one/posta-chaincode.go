@@ -18,6 +18,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"time"
 	"strconv"
 
 	"github.com/hyperledger/fabric/core/chaincode/shim"
@@ -103,12 +104,12 @@ Will add test data (5 parsels)to our network
  */
 func (s *SmartContract) initLedger(APIstub shim.ChaincodeStubInterface) sc.Response {
 	parsel := []Parsel{
-		Parsel{Sender: "Alex",  SenderTS: "1504054225",  SenderBranch: "001", Receiver: "Miriam", ReceiverTS: "1493512301", ReceiverBranch: "101"},
-		Parsel{Sender: "Ben",   SenderTS: "1504054225",  SenderBranch: "002", Receiver: "Elvis",  ReceiverTS: "", ReceiverBranch: "102"},
-		Parsel{Sender: "Charly",SenderTS: "1504054225",  SenderBranch: "003", Receiver: "Elvis",  ReceiverTS: "", ReceiverBranch: "103"},
-		Parsel{Sender: "Dan",   SenderTS: "1504054225",  SenderBranch: "004", Receiver: "Alex",   ReceiverTS: "", ReceiverBranch: "104"},
-		Parsel{Sender: "Elvis", SenderTS: "1504054225",  SenderBranch: "005", Receiver: "Alex",   ReceiverTS: "", ReceiverBranch: "105"},
-		Parsel{Sender: "Sega",  SenderTS: "1504054225",   SenderBranch: "005", Receiver: "Mary",  ReceiverTS: "6666666", ReceiverBranch: "105"},
+		Parsel{Sender: "Alex",  SenderTS: time.Now().Format("20060102150405"),  SenderBranch: "001", Receiver: "Miriam", ReceiverTS: "1493512301", ReceiverBranch: "101"},
+		Parsel{Sender: "Ben",   SenderTS: time.Now().Format("20060102150405"),  SenderBranch: "002", Receiver: "Elvis",  ReceiverTS: "", ReceiverBranch: "102"},
+		Parsel{Sender: "Charly",SenderTS: time.Now().Format("20060102150405"),  SenderBranch: "003", Receiver: "Elvis",  ReceiverTS: "", ReceiverBranch: "103"},
+		Parsel{Sender: "Dan",   SenderTS: time.Now().Format("20060102150405"),  SenderBranch: "004", Receiver: "Alex",   ReceiverTS: "", ReceiverBranch: "104"},
+		Parsel{Sender: "Elvis", SenderTS: time.Now().Format("20060102150405"),  SenderBranch: "005", Receiver: "Alex",   ReceiverTS: "", ReceiverBranch: "105"},
+		Parsel{Sender: "Sega",  SenderTS: time.Now().Format("20060102150405"),  SenderBranch: "005", Receiver: "Mary",   ReceiverTS: "", ReceiverBranch: "105"},
 	}
 
 	i := 0
@@ -136,7 +137,7 @@ func (s *SmartContract) initLedger(APIstub shim.ChaincodeStubInterface) sc.Respo
 		return shim.Error("Incorrect number of arguments. Expecting 7")
 	}
 
-	var parsel = Parsel{ Sender: args[1], SenderBranch: args[2], SenderTS: args[3], Receiver: args[4], ReceiverBranch: args[5], ReceiverTS: args[6] }
+	var parsel = Parsel{ Sender: args[1], SenderBranch: args[2], SenderTS: time.Now().Format("20060102150405"), Receiver: args[4], ReceiverBranch: args[5], ReceiverTS: args[6] }
 
 	parselAsBytes, _ := json.Marshal(parsel)
 	err := APIstub.PutState(args[0], parselAsBytes)
@@ -283,7 +284,7 @@ func (s *SmartContract) deliveryParsel(APIstub shim.ChaincodeStubInterface, args
 	json.Unmarshal(parselAsBytes, &parsel)
 	// Normally check that the specified argument is a valid holder of parsel
 	// we are skipping this check for this example
-	parsel.ReceiverTS = args[1]
+	parsel.ReceiverTS = time.Now().Format("20060102150405")
 
 	parselAsBytes, _ = json.Marshal(parsel)
 	err := APIstub.PutState(args[0], parselAsBytes)
