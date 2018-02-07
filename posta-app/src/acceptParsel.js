@@ -69,7 +69,7 @@ Fabric_Client.newDefaultKeyValueStore({ path: store_path
     tx_id = fabric_client.newTransactionID();
     console.log("Assigning transaction_id: ", tx_id._transaction_id);
 
-    // recordTuna - requires 7 args:
+    // accepParsel - requires 7 args:
     // ID,
     // senderBranch,
     // sender,
