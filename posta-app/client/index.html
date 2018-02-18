@@ -11,7 +11,7 @@
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.0/jquery.min.js"></script>
     <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.3.7/js/bootstrap.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.3/angular.min.js"></script>
-    
+
     <!-- adding style here -->
     <style type="text/css">
       header{
@@ -41,7 +41,7 @@
         margin-left:0;
         width:40%;
         display:inline-block;
-      } 
+      }
       #id {
         width:49%;
         display: inline-block;
@@ -72,7 +72,7 @@
         <label>Query All Parsels in System</label>
         <p><input id="queryAllParsels" type="submit" value="Query" class="btn btn-primary" ng-click="queryAllParsels()"></p>
       </div>
- 
+
       <table id="all_parsels" class="table" align="center">
 
         <tr>
@@ -99,7 +99,7 @@
       <div class="form-group">
         <label>Query a details about Specific Parsel</label><br>
         <h5 style="color:red;margin-bottom:2%" id="error_query">Error: Please enter a valid Parsel Id</h5>
-        
+
         Enter a parsel number: <input id="createName" class="form-control" type="text" placeholder="Ex: 3" ng-model="parsel_id">
         <input id="querySubmit" type="submit" value="Query" class="btn btn-primary" ng-click="queryParsel()">
       </div>
@@ -125,18 +125,18 @@
         </tr>
       </table>
 
-      
+
       <div class="form-group">
         <label>Query Parsels by Sender</label><br>
         <h5 style="color:red;margin-bottom:2%" id="error_sender">Error: Please enter a valid Sender name</h5>
-                      
+
                Enter a sender name: <input id="createName" class="form-control" type="text" placeholder="Ex: 3" ng-model="sender_name">
         <input id="querySender" type="submit" value="Query" class="btn btn-primary" ng-click="querySender()">
       </div>
 
       <table id="sender_parsels" class="table" align="center">
 
-        <tr > 
+        <tr >
           <th>Sender</th>
           <th>Sender branch</th>
           <th>Sender Timestamp</th>
@@ -153,14 +153,14 @@
           <td>{{sender.receiverBranch}}</td>
           <td>{{sender.receiver}}</td>
         </tr>
-      </table> 
+      </table>
 
 
 
       <div class="form-group">
         <label>Accept: Create Inital Parsel Record</label>
         <h5 style="color:green;margin-bottom:2%" id="success_create">Success! Tx ID: {{add_parsel}}</h5>
-        
+
         <br>
         Enter parsel id: <input class="form-control" type="text" placeholder="Ex: 211" ng-model="parsel.id">
         Enter sender name: <input class="form-control" type="text" placeholder="Ex: John" ng-model="parsel.sender">
@@ -169,7 +169,7 @@
         Enter receiver name: <input class="form-control" type="text" placeholder="Ex: John" ng-model="parsel.receiver">
         Enter receiver branch: <input class="form-control" type="text" placeholder="Ex: 002" ng-model="parsel.receiverBranch">
 		Enter receiver timestamp: <input class="form-control" type="text" placeholder="Ex: 4982342301" ng-model="parsel.receiverTS">
-        <input id="createSubmit" type="submit" value="Create" class="btn btn-primary" ng-click="acceptParsel()"> 
+        <input id="createSubmit" type="submit" value="Create" class="btn btn-primary" ng-click="acceptParsel()">
       </div>
 
       <div class="form-group">
@@ -177,7 +177,7 @@
         <h5 style="color:green;margin-bottom:2%" id="success_holder">Success! Tx ID: {{delivery_parsel}}</h5>
         <h5 style="color:red;margin-bottom:2%" id="error_holder">Error: Please enter a valid Parsel Id</h5>
         Enter a parsel id from available list above: <input class="form-control" name="assetSelect" placeholder="Ex: 1" ng-model="holder.id">
-        Enter delivery timestamp: <input class="form-control" name="assetSelect" placeholder="Ex: 2014090811" ng-model="holder.receiverTS">
+        <!--  Enter delivery timestamp: <input class="form-control" name="assetSelect" placeholder="Ex: 2014090811" ng-model="holder.receiverTS"> -->
         <input id="transferSubmit" type="submit" value="Change" class="btn btn-primary" ng-click="deliveryParsel()">
       </div>
 
