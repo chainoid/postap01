@@ -8,3 +8,16 @@ if getting error about running ./startFabric.sh permission
 chmod a+x startFabric.sh
 
 This code is based on code written by the Hyperledger Fabric community. Source code can be found here: (https://github.com/hyperledger/fabric-samples).
+
+
+## Basic Network Config
+Note that this basic configuration uses pre-generated certificates and key material, and also has predefined transactions to initialize a channel named "mychannel".
+
+To regenerate this material, simply run generate.sh.
+
+To start the network, run start.sh. To stop it, run stop.sh To completely remove all incriminating evidence of the network on your system, run teardown.sh.
+
+
+## Acknowledgements
+
+The scripts are inspired by first-network and fabcar of Hyperledger Fabric samples.
