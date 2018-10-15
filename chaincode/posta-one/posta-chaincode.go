@@ -20,7 +20,6 @@ import (
 	"fmt"
 	"time"
 	"strconv"
-
 	"github.com/hyperledger/fabric/core/chaincode/shim"
 	sc "github.com/hyperledger/fabric/protos/peer"
 )
@@ -75,6 +74,8 @@ func (s *SmartContract) Invoke(APIstub shim.ChaincodeStubInterface) sc.Response 
 		return s.deliveryParsel(APIstub, args)
 	} else if function == "querySender" {
 		return s.querySender(APIstub, args)
+	} else if function == "historyRecord" {
+		return s.historyRecord(APIstub, args)
 	}
 
 	return shim.Error("Invalid Smart Contract function name.")
@@ -294,6 +295,60 @@ func (s *SmartContract) deliveryParsel(APIstub shim.ChaincodeStubInterface, args
 
 	return shim.Success(nil)
 }
+
+/*
+ * The getHistoryForKey method *
+ */
+func (s *SmartContract) historyRecord(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
+	
+    resultsIterator, err := APIstub.GetHistoryForKey(args[0])
+    
+    if err != nil {
+		return shim.Error(err.Error())
+	}
+	defer resultsIterator.Close()
+
+	var buffer bytes.Buffer
+	buffer.WriteString("[")
+
+	bArrayMemberAlreadyWritten := false
+
+	for resultsIterator.HasNext() {
+
+		queryResponse, err := resultsIterator.Next()
+		if err != nil {
+			return shim.Error(err.Error())
+		}
+		if bArrayMemberAlreadyWritten == true {
+			buffer.WriteString(",")
+		}
+		//buffer.WriteString("{\"Key\":")
+		//buffer.WriteString("\"")
+		//buffer.WriteString("\"")
+
+		json.Marshal(queryResponse)
+		buffer.WriteString("{\"TxId\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(queryResponse.TxId)
+		buffer.WriteString("\"")
+
+
+		buffer.WriteString(", \"Record\":")
+		buffer.WriteString(string(queryResponse.Value))
+		buffer.WriteString(", \"IsDelete\":")
+		// Record is a JSON object, so we write as-is
+		buffer.WriteString(strconv.FormatBool(queryResponse.IsDelete))
+		buffer.WriteString("}")
+
+		bArrayMemberAlreadyWritten = true
+	}
+	buffer.WriteString("]")
+
+	fmt.Printf("- historyRecord:\n%s\n", buffer.String())
+
+	return shim.Success(buffer.Bytes())
+}
+
 
 /*
  * main function *

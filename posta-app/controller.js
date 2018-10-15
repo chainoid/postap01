@@ -206,7 +206,7 @@ return{
 		                channel_event_hub.disconnect();
 
 		                // now let the application know what happened
-		                var return_status = {event_status : code, tx_id : transaction_id_string};
+		                var return_status = {event_status : code, tx_id : transaction_id_string};fmt.Printf("- history:\n%s\n", resultsIterator, args[0])
 		                if (code !== 'VALID') {
 		                    console.error('The transaction was invalid, code = ' + code);
 		                    resolve(return_status); // we could use reject(new Error('Problem with the tranaction, event status ::'+code));
@@ -324,7 +324,7 @@ return{
 		var channel = fabric_client.newChannel('mychannel');
 		var peer = fabric_client.newPeer('grpc://localhost:7051');
 		channel.addPeer(peer);
-
+		fmt.Printf("- history:\n%s\n", resultsIterator, args[0])
 		//
 		var member_user = null;
 		var store_path = path.join(os.homedir(), '.hfc-key-store');
@@ -377,7 +377,7 @@ return{
 		            //res.send(query_responses[0].toString())
 		        }
 		    } else {
-		        console.log("No payloads were returned from query");
+		        console.log("No payloads were returned from query");fmt.Printf("- history:\n%s\n", resultsIterator, args[0])
 		        res.send("No parsels for sender")
 		    }
 		}).catch((err) => {
@@ -385,6 +385,81 @@ return{
 		    res.send("No parsels for sender")
 		});
 	},
+
+    history_parsel: function(req, res){
+
+		var fabric_client = new Fabric_Client();
+		var historyId = req.params.historyId
+
+		// setup the fabric network
+		var channel = fabric_client.newChannel('mychannel');
+		var peer = fabric_client.newPeer('grpc://localhost:7051');
+		channel.addPeer(peer);
+
+		//
+		var member_user = null;
+		var store_path = path.join(os.homedir(), '.hfc-key-store');
+		console.log('Store path:'+store_path);
+		var tx_id = null;
+
+		// create the key value store as defined in the fabric-client/config/default.json 'key-value-store' setting
+		Fabric_Client.newDefaultKeyValueStore({ path: store_path
+		}).then((state_store) => {
+		    // assign the store to the fabric client
+		    fabric_client.setStateStore(state_store);
+		    var crypto_suite = Fabric_Client.newCryptoSuite();
+		    // use the same location for the state store (where the users' certificate are kept)
+		    // and the crypto store (where the users' keys are kept)
+		    var crypto_store = Fabric_Client.newCryptoKeyStore({path: store_path});
+		    crypto_suite.setCryptoKeyStore(crypto_store);
+		    fabric_client.setCryptoSuite(crypto_suite);
+
+		    // get the enrolled user from persistence, this user will sign all requestsevent_hub
+		    return fabric_client.getUserContext('user1', true);
+		}).then((user_from_store) => {
+		    if (user_from_store && user_from_store.isEnrolled()) {
+		        console.log('Successfully loaded user1 from persistence');
+		        member_user = user_from_store;
+		    } else {
+		        throw new Error('Failed to get user1.... run registerUser.js');
+		    }
+
+		    // getParsel - requires 1 argument, ex: args: ['4'],
+		    const request = {
+		        chaincodeId: 'posta-one',
+		        txId: tx_id,
+		        fcn: 'historyRecord',
+		        args: [historyId]
+		    };
+
+		    // send the query proposal to the peer
+		    return channel.queryByChaincode(request);
+		}).then((query_responses) => {
+		    console.log("Query has completed, checking results");
+		    // query_responses could have more than one  results if there multiple peers were used as targets
+		    if (query_responses && query_responses.length == 1) {
+		        if (query_responses[0] instanceof Error) {event_hub
+		            console.error("error from query = ", query_responses[0]);
+		            res.send("No history for parsel")
+		            
+		        } else {
+					console.log("Response is ", query_responses[0].toString());
+					
+		            res.json(JSON.parse(query_responses[0].toString()));
+					//res.send(query_responses[0].toString())
+					console.log("Response process completed.");
+		        }
+		    } else {
+		        console.log("No payloads were returned from query");
+		        res.send("No history for parsel")
+		    }
+		}).catch((err) => {
+		    console.error('Failed to query successfully :: ' + err);
+		    res.send("No history for parsel")
+		});
+	},
+
+
 	delivery_parsel: function(req, res){
 		console.log("put a timestamp, changing owner of parsel on delivery: ");
 
