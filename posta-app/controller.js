@@ -84,6 +84,7 @@ return{
 		    console.error('Failed to query successfully :: ' + err);
 		});
 	},
+
 	add_parsel: function(req, res){
 		console.log("submit recording of new parsel: ");
 
@@ -186,24 +187,23 @@ return{
 
 		        // get an eventhub once the fabric client has a user assigned. The user
 		        // is required bacause the event registration must be signed
-		        let event_hub = fabric_client.newEventHub();
-		        event_hub.setPeerAddr('grpc://localhost:7053');
-
+		        let channel_event_hub = channel.newChannelEventHub(peer);
+		        
 		        // using resolve the promise so that result status may be processed
 		        // under the then clause rather than having the catch clause process
 		        // the status
 		        let txPromise = new Promise((resolve, reject) => {
 		            let handle = setTimeout(() => {
-		                event_hub.disconnect();
+		                channel_event_hub.disconnect();
 		                resolve({event_status : 'TIMEOUT'}); //we could use reject(new Error('Trnasaction did not complete within 30 seconds'));
 		            }, 3000);
-		            event_hub.connect();
-		            event_hub.registerTxEvent(transaction_id_string, (tx, code) => {
+		            channel_event_hub.connect();
+		            channel_event_hub.registerTxEvent(transaction_id_string, (tx, code) => {
 		                // this is the callback for transaction event status
 		                // first some clean up of event listener
 		                clearTimeout(handle);
-		                event_hub.unregisterTxEvent(transaction_id_string);
-		                event_hub.disconnect();
+		                channel_event_hub.unregisterTxEvent(transaction_id_string);
+		                channel_event_hub.disconnect();
 
 		                // now let the application know what happened
 		                var return_status = {event_status : code, tx_id : transaction_id_string};
@@ -211,7 +211,7 @@ return{
 		                    console.error('The transaction was invalid, code = ' + code);
 		                    resolve(return_status); // we could use reject(new Error('Problem with the tranaction, event status ::'+code));
 		                } else {
-		                    console.log('The transaction has been committed on peer ' + event_hub._ep._endpoint.addr);
+		                    console.log('The transaction has been committed on peer ' + channel_event_hub.getPeerAddr());
 		                    resolve(return_status);
 		                }
 		            }, (err) => {
@@ -343,7 +343,7 @@ return{
 		    crypto_suite.setCryptoKeyStore(crypto_store);
 		    fabric_client.setCryptoSuite(crypto_suite);
 
-		    // get the enrolled user from persistence, this user will sign all requests
+		    // get the enrolled user from persistence, this user will sign all requestsevent_hub
 		    return fabric_client.getUserContext('user1', true);
 		}).then((user_from_store) => {
 		    if (user_from_store && user_from_store.isEnrolled()) {
@@ -367,7 +367,7 @@ return{
 		    console.log("Query has completed, checking results");
 		    // query_responses could have more than one  results if there multiple peers were used as targets
 		    if (query_responses && query_responses.length == 1) {
-		        if (query_responses[0] instanceof Error) {
+		        if (query_responses[0] instanceof Error) {event_hub
 		            console.error("error from query = ", query_responses[0]);
 		            res.send("No parsels for sender")
 		            
@@ -476,48 +476,46 @@ return{
 		        var sendPromise = channel.sendTransaction(request);
 		        promises.push(sendPromise); //we want the send transaction first, so that we know where to check status
 
-		        // get an eventhub once the fabric client has a user assigned. The user
-		        // is required bacause the event registration must be signed
-		        let event_hub = fabric_client.newEventHub();
-		        event_hub.setPeerAddr('grpc://localhost:7053');
+				// Start the new Channed-base Event Hub solution
+				console.log('The Transaction sent to ledger');
 
-		        // using resolve the promise so that result status may be processed
+				// get an eventhub once the fabric client has a user assigned. The user
+		        // is required bacause the event registration must be signed
+				var channel_event_hub = channel.newChannelEventHub(peer);
+
+				console.log('The Channel Event Hub connected.');
+
+				// using resolve the promise so that result status may be processed
 		        // under the then clause rather than having the catch clause process
 		        // the status
-		        let txPromise = new Promise((resolve, reject) => {
-		            let handle = setTimeout(() => {
-		                event_hub.disconnect();
-		                resolve({event_status : 'TIMEOUT'}); //we could use reject(new Error('Trnasaction did not complete within 30 seconds'));
-		            }, 3000);
-		            event_hub.connect();
-		            event_hub.registerTxEvent(transaction_id_string, (tx, code) => {
-		                // this is the callback for transaction event status
-		                // first some clean up of event listener
-		                clearTimeout(handle);
-		                event_hub.unregisterTxEvent(transaction_id_string);
-		                event_hub.disconnect();
-
-		                // now let the application know what happened
-		                var return_status = {event_status : code, tx_id : transaction_id_string};
-		                if (code !== 'VALID') {
-		                    console.error('The transaction was invalid, code = ' + code);
-		                    resolve(return_status); // we could use reject(new Error('Problem with the tranaction, event status ::'+code));
-		                } else {
-		                    console.log('The transaction has been committed on peer ' + event_hub._ep._endpoint.addr);
-		                    resolve(return_status);
-		                }
-		            }, (err) => {
-		                //this is the callback if something goes wrong with the event registration or processing
-		                reject(new Error('There was a problem with the eventhub ::'+err));
-		            });
-		        });
-		        promises.push(txPromise);
-
-		        return Promise.all(promises);
+				let txPromise = new Promise((resolve, reject) => {
+                    let handle = setTimeout(() => {
+                        channel_event_hub.unregisterTxEvent(transaction_id_string);
+                        channel_event_hub.disconnect();
+                        resolve({event_status: 'TIMEOUT'}); //we could use reject(new Error('Trnasaction did not complete within 30 seconds'));
+					}, 3000);
+					
+                    channel_event_hub.registerTxEvent(transaction_id_string, (tx, code) => {
+						  
+						// this is the callback for transaction event status
+		                // first some clean up of channel event listener
+						clearTimeout(handle);
+                        var return_status = {event_status: code, tx_id: transaction_id_string};
+						resolve(return_status);
+						}, (err) => {
+                            reject(new Error('There was a problem with the channel eventhub ::' + err));
+                        },
+                        {disconnect: true}
+                    );
+                    channel_event_hub.connect();
+                });
+                promises.push(txPromise);
+                return Promise.all(promises);
+		        
 		    } else {
 		        console.error('Failed to send Proposal or receive valid response. Response null or status is not 200. exiting...');
 		        res.send("Error: no parsel found");
-		        // throw new Error('Failed to send Proposal or receive valid response. Response null or status is not 200. exiting...');
+		        throw new Error('Failed to send Proposal or receive valid response. Response null or status is not 200. exiting...');
 		    }
 		}).then((results) => {
 		    console.log('Send transaction promise and event listener promise have completed');
