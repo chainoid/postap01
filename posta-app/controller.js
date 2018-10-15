@@ -324,7 +324,7 @@ return{
 		var channel = fabric_client.newChannel('mychannel');
 		var peer = fabric_client.newPeer('grpc://localhost:7051');
 		channel.addPeer(peer);
-		fmt.Printf("- history:\n%s\n", resultsIterator, args[0])
+		
 		//
 		var member_user = null;
 		var store_path = path.join(os.homedir(), '.hfc-key-store');
