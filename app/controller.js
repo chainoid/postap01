@@ -25,7 +25,7 @@ return{
 		var fabric_client = new Fabric_Client();
 
 		// setup the fabric network
-		var channel = fabric_client.newChannel('mychannel');
+		var channel = fabric_client.newChannel('posta-channel');
 		var peer = fabric_client.newPeer('grpc://localhost:7051');
 		channel.addPeer(peer);
 
@@ -59,7 +59,7 @@ return{
 
 		    // queryAllParsels - requires no arguments , ex: args: [''],
 		    const request = {
-		        chaincodeId: 'posta-one',
+		        chaincodeId: 'postap',
 		        txId: tx_id,
 		        fcn: 'queryAllParsels',
 		        args: ['']
@@ -103,7 +103,7 @@ return{
 		var fabric_client = new Fabric_Client();
 
 		// setup the fabric network
-		var channel = fabric_client.newChannel('mychannel');
+		var channel = fabric_client.newChannel('posta-channel');
 		var peer = fabric_client.newPeer('grpc://localhost:7051');
 		channel.addPeer(peer);
 		var order = fabric_client.newOrderer('grpc://localhost:7050')
@@ -145,10 +145,10 @@ return{
 		    // send proposal to endorser
 		    const request = {
 		        //targets : --- letting this default to the peers assigned to the channel
-		        chaincodeId: 'posta-one',
+		        chaincodeId: 'postap',
 		        fcn: 'acceptParsel',
 		        args: [key, sender, senderBranch, senderTS, receiver, receiverBranch, receiverTS ],
-		        chainId: 'mychannel',
+		        chainId: 'posta-channel',
 		        txId: tx_id
 		    };
 
@@ -206,7 +206,7 @@ return{
 		                channel_event_hub.disconnect();
 
 		                // now let the application know what happened
-		                var return_status = {event_status : code, tx_id : transaction_id_string};fmt.Printf("- history:\n%s\n", resultsIterator, args[0])
+		                var return_status = {event_status : code, tx_id : transaction_id_string};
 		                if (code !== 'VALID') {
 		                    console.error('The transaction was invalid, code = ' + code);
 		                    resolve(return_status); // we could use reject(new Error('Problem with the tranaction, event status ::'+code));
@@ -246,13 +246,14 @@ return{
 		    console.error('Failed to invoke successfully :: ' + err);
 		});
 	},
+
 	get_parsel: function(req, res){
 
 		var fabric_client = new Fabric_Client();
 		var key = req.params.id
 
 		// setup the fabric network
-		var channel = fabric_client.newChannel('mychannel');
+		var channel = fabric_client.newChannel('posta-channel');
 		var peer = fabric_client.newPeer('grpc://localhost:7051');
 		channel.addPeer(peer);
 
@@ -286,7 +287,7 @@ return{
 
 		    // getParsel - requires 1 argument, ex: args: ['4'],
 		    const request = {
-		        chaincodeId: 'posta-one',
+		        chaincodeId: 'postap',
 		        txId: tx_id,
 		        fcn: 'queryParsel',
 		        args: [key]
@@ -315,13 +316,14 @@ return{
 		    res.send("Could not locate parsel")
 		});
 	},
+
 	get_sender: function(req, res){
 
 		var fabric_client = new Fabric_Client();
 		var key = req.params.name
 
 		// setup the fabric network
-		var channel = fabric_client.newChannel('mychannel');
+		var channel = fabric_client.newChannel('posta-channel');
 		var peer = fabric_client.newPeer('grpc://localhost:7051');
 		channel.addPeer(peer);
 		
@@ -355,7 +357,7 @@ return{
 
 		    // getParsel - requires 1 argument, ex: args: ['4'],
 		    const request = {
-		        chaincodeId: 'posta-one',
+		        chaincodeId: 'postap',
 		        txId: tx_id,
 		        fcn: 'querySender',
 		        args: [key]
@@ -392,7 +394,7 @@ return{
 		var historyId = req.params.historyId
 
 		// setup the fabric network
-		var channel = fabric_client.newChannel('mychannel');
+		var channel = fabric_client.newChannel('posta-channel');
 		var peer = fabric_client.newPeer('grpc://localhost:7051');
 		channel.addPeer(peer);
 
@@ -426,7 +428,7 @@ return{
 
 		    // getParsel - requires 1 argument, ex: args: ['4'],
 		    const request = {
-		        chaincodeId: 'posta-one',
+		        chaincodeId: 'postap',
 		        txId: tx_id,
 		        fcn: 'historyRecord',
 		        args: [historyId]
@@ -470,7 +472,7 @@ return{
 		var fabric_client = new Fabric_Client();
 
 		// setup the fabric network
-		var channel = fabric_client.newChannel('mychannel');
+		var channel = fabric_client.newChannel('posta-channel');
 		var peer = fabric_client.newPeer('grpc://localhost:7051');
 		channel.addPeer(peer);
 		var order = fabric_client.newOrderer('grpc://localhost:7050')
@@ -511,10 +513,10 @@ return{
 		    // send proposal to endorser
 		    var request = {
 		        //targets : --- letting this default to the peers assigned to the channel
-		        chaincodeId: 'posta-one',
+		        chaincodeId: 'postap',
 		        fcn: 'deliveryParsel',
 		        args: [key, deliveryTS],
-		        chainId: 'mychannel',
+		        chainId: 'posta-channel',
 		        txId: tx_id
 		    };
 
@@ -554,8 +556,8 @@ return{
 				// Start the new Channed-base Event Hub solution
 				console.log('The Transaction sent to ledger');
 
-				// get an eventhub once the fabric client has a user assigned. The user
-		        // is required bacause the event registration must be signed
+				// get an eventhub once the fabric client has a usera93bb22c07fd assigned. The user
+		        // is required bacause the event registration must ba93bb22c07fde signed
 				var channel_event_hub = channel.newChannelEventHub(peer);
 
 				console.log('The Channel Event Hub connected.');
@@ -611,7 +613,7 @@ return{
 		    }
 		}).catch((err) => {
 		    console.error('Failed to invoke successfully :: ' + err);
-		    res.send("Error: no parsel found");
+		    //res.send("Error: no parsel found");
 		});
 
 	}
