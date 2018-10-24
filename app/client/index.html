@@ -104,7 +104,7 @@
           <td>{{parsel.Key}}</td>
           <td>{{parsel.sender}}</td>
           <td>{{parsel.senderTS}}</td>
-          <td>{{parsel.senderBranch}}</td> <!--  Enter delivery timestamp: <input class="form-control" name="assetSelect" placeholder="Ex: 2014090811" ng-model="holder.receiverTS"> -->
+          <td>{{parsel.senderBranch}}</td> 
           <td>{{parsel.receiverBranch}}</td>
           <td>{{parsel.receiver}}</td>
           <td>{{parsel.receiverTS}}</td>
@@ -115,7 +115,7 @@
         <label>Query a details about Specific Parsel</label><br>
         <h5 style="color:red;margin-bottom:2%" id="error_query">Error: Please enter a valid Parsel Id</h5>
 
-        Enter a parsel number: <input id="queryParselId" class="form-control input-field" type="text" placeholder=" Ex: 1" ng-model="parsel_id">
+        Enter a parsel ID: <input id="queryParselId" class="form-control input-field" type="text" placeholder=" Ex: 1" ng-model="parsel_id">
         <input id="querySubmit" type="submit" value="Query" class="btn btn-primary" ng-click="queryParsel()">
       </div>
 

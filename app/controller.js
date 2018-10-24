@@ -303,8 +303,11 @@ return{
 		            console.error("error from query = ", query_responses[0]);
 		            res.send("Could not locate parsel")
 		            
-		        } else {
-		            console.log("Response is ", query_responses[0].toString());
+				} if (query_responses[0].length == 0) {
+                    console.error("Empty record from query.");
+		            res.send("Could not locate parsel")   
+				} else {
+		            console.log("Response size is ", query_responses[0].length);
 		            res.send(query_responses[0].toString())
 		        }
 		    } else {
@@ -369,7 +372,7 @@ return{
 		    console.log("Query has completed, checking results");
 		    // query_responses could have more than one  results if there multiple peers were used as targets
 		    if (query_responses && query_responses.length == 1) {
-		        if (query_responses[0] instanceof Error) {event_hub
+		        if (query_responses[0] instanceof Error) {
 		            console.error("error from query = ", query_responses[0]);
 		            res.send("No parsels for sender")
 		            
@@ -379,8 +382,8 @@ return{
 		            //res.send(query_responses[0].toString())
 		        }
 		    } else {
-		        console.log("No payloads were returned from query");fmt.Printf("- history:\n%s\n", resultsIterator, args[0])
-		        res.send("No parsels for sender")
+				console.log("No payloads were returned from query");
+				res.send("No parsels for sender")
 		    }
 		}).catch((err) => {
 		    console.error('Failed to query successfully :: ' + err);
@@ -440,7 +443,7 @@ return{
 		    console.log("Query has completed, checking results");
 		    // query_responses could have more than one  results if there multiple peers were used as targets
 		    if (query_responses && query_responses.length == 1) {
-		        if (query_responses[0] instanceof Error) {event_hub
+		        if (query_responses[0] instanceof Error) {
 		            console.error("error from query = ", query_responses[0]);
 		            res.send("No history for parsel")
 		            
