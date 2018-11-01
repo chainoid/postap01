@@ -127,9 +127,9 @@ func (s *SmartContract) queryParsel(APIstub shim.ChaincodeStubInterface, args []
 }
 
 /*
-  * The acceptParsel method *
-	In the Post office would use to accept parsel from sender person.
-	This method takes in five arguments (attributes to be saved in the ledger).
+  * The acceptParsel method *TxId           string `json:"txId"`
+	In the Post office would TxId           string `json:"txId"`
+	This method takes in fiveTxId           string `json:"txId"`edger).
 */
 
 func (s *SmartContract) acceptParsel(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
@@ -322,21 +322,25 @@ func (s *SmartContract) historyRecord(APIstub shim.ChaincodeStubInterface, args 
 		if bArrayMemberAlreadyWritten == true {
 			buffer.WriteString(",")
 		}
-		//buffer.WriteString("{\"Key\":")
-		//buffer.WriteString("\"")
-		//buffer.WriteString("\
 
 		json.Marshal(queryResponse)
+
+		// Some extra historical fields
 		buffer.WriteString("{\"TxId\":")
 		buffer.WriteString("\"")
-		buffer.WriteString(queryResponse.TxId)
+		buffer.WriteString(string(queryResponse.TxId))
 		buffer.WriteString("\"")
+		buffer.WriteString(",\"TxTS\":")
+		buffer.WriteString("\"")
+		buffer.WriteString(time.Unix(queryResponse.Timestamp.Seconds, 0).Format(time.RFC3339))
+		buffer.WriteString("\"")
+		buffer.WriteString(",\"IsDelete\":")
+		buffer.WriteString(strconv.FormatBool(queryResponse.IsDelete))
 
+		// Record the body of JSON object, so we write as-is
 		buffer.WriteString(", \"Record\":")
 		buffer.WriteString(string(queryResponse.Value))
-		buffer.WriteString(", \"IsDelete\":")
-		// Record is a JSON object, so we write as-is
-		buffer.WriteString(strconv.FormatBool(queryResponse.IsDelete))
+
 		buffer.WriteString("}")
 
 		bArrayMemberAlreadyWritten = true

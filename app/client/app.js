@@ -13,7 +13,11 @@ app.controller('appController', function($scope, appFactory){
 	$("#error_query").hide();
 	$("#error_sender").hide();
 	$("#error_history").hide();
-		
+	$("#all_parsels").hide();
+	$("#query_parsel").hide();
+	$("#history_parsel").hide();
+	$("#sender_parsels").hide();
+			
 	$scope.queryAllParsels = function(){
 
 		appFactory.queryAllParsels(function(data){
@@ -32,6 +36,8 @@ app.controller('appController', function($scope, appFactory){
 		$("#history_parsel").hide();
 		$("#query_parsel").hide();
 		$("#sender_parsels").hide();
+
+		$("#all_parsels").show();
 	}
 
 	$scope.queryParsel = function(){
@@ -54,9 +60,7 @@ app.controller('appController', function($scope, appFactory){
 		
 		$("#history_parsel").hide();
 		$("#sender_parsels").hide();
-		
-		//alert("   showParselParams " + parsel.Key );
-
+				
 		var id = parsel.Key;
 
 		appFactory.queryParsel(id, function(data){
@@ -174,8 +178,11 @@ app.controller('appController', function($scope, appFactory){
 						           
 			var array = [];
 			for (var i = 0; i < data.length; i++){
-				//parseInt(data[i].TxId);
-				data[i].Record.Key = data[i].Key;
+				
+				data[i].Record.TxId = data[i].TxId;
+				data[i].Record.TxTS = data[i].TxTS;
+				data[i].Record.IsDelete = data[i].IsDelete;
+			
 				array.push(data[i].Record);
 			}
 			array.sort(function(a, b) {
