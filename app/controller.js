@@ -231,7 +231,7 @@ return{
 		    // check the results in the order the promises were added to the promise all list
 		    if (results && results[0] && results[0].status === 'SUCCESS') {
 		        console.log('Successfully sent transaction to the orderer.');
-		        res.send(tx_id.getTransactionID());
+		        //res.send(tx_id.getTransactionID());
 		    } else {
 		        console.error('Failed to order the transaction. Error code: ' + response.status);
 		    }
