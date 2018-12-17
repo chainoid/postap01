@@ -134,14 +134,15 @@ func (s *SmartContract) queryParsel(APIstub shim.ChaincodeStubInterface, args []
 
 func (s *SmartContract) acceptParsel(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 
-	if len(args) != 7 {
-		return shim.Error("Incorrect number of arguments. Expecting 7")
+	if len(args) != 4 {
+		return shim.Error("Incorrect number of arguments. Expecting 4")
 	}
 
-	var parsel = Parsel{Sender: args[1], SenderBranch: args[2], SenderTS: time.Now().Format(time.RFC3339), Receiver: args[4], ReceiverBranch: args[5], ReceiverTS: args[6]}
+	var parsel = Parsel{Sender: args[0], SenderBranch: args[1], SenderTS: time.Now().Format(time.RFC3339), Receiver: args[2], ReceiverBranch: args[3], ReceiverTS: ""}
 
 	parselAsBytes, _ := json.Marshal(parsel)
 	err := APIstub.PutState(fmt.Sprintf("%X", rand.Int()), parselAsBytes)
+
 	if err != nil {
 		return shim.Error(fmt.Sprintf("Failed to record new parsel: %s", args[0]))
 	}

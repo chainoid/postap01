@@ -86,19 +86,17 @@ return{
 	},
 
 	add_parsel: function(req, res){
+
 		console.log("submit recording of new parsel: ");
 
 		var array = req.params.parsel.split("-");
 		console.log(array);
 
-		var key = array[0]
-		var sender = array[1]
-		var senderBranch = array[2]
-		var senderTS = array[3]
-		var receiver = array[4]
-		var receiverBranch = array[5]
-		var receiverTS = array[6]
-
+		var sender = array[0]
+		var senderBranch = array[1]
+		var receiver = array[2]
+		var receiverBranch = array[3]
+		
 
 		var fabric_client = new Fabric_Client();
 
@@ -140,14 +138,14 @@ return{
 		    tx_id = fabric_client.newTransactionID();
 		    console.log("Assigning transaction_id: ", tx_id._transaction_id);
 
-		    // acceptParsel - requires 7 args, ID, senderBranch, sender, senderTS, receiver, receiverBranch 
-		    // - ex: args: ['10', 'John', '002', '1504054225', 'Hansel', '005', '1504054778'], 
+		    // acceptParsel - requires 4 args: senderBranch, sender, receiver, receiverBranch 
+		    // - ex: args: ['John', '002', 'Hansel', '005'], 
 		    // send proposal to endorser
 		    const request = {
 		        //targets : --- letting this default to the peers assigned to the channel
 		        chaincodeId: 'postap',
 		        fcn: 'acceptParsel',
-		        args: [key, sender, senderBranch, senderTS, receiver, receiverBranch, receiverTS ],
+		        args: [sender, senderBranch, receiver, receiverBranch ],
 		        chainId: 'posta-channel',
 		        txId: tx_id
 		    };

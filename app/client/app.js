@@ -206,7 +206,7 @@ app.controller('appController', function($scope, appFactory){
 	$scope.acceptParsel = function(){
 
 		appFactory.acceptParsel($scope.parsel, function(data){
-			$scope.add_parsel = data;
+			$scope.accepted_parsel_id = data;
 			$("#success_create").show();
 		});
 	}
@@ -247,7 +247,7 @@ app.factory('appFactory', function($http){
 
 	factory.acceptParsel = function(data, callback){
 		
-		var parsel = data.id + "-" + data.sender + "-" + data.senderBranch + "-" + data.senderTS + "-" + data.receiver+ "-" + data.receiverBranch + "-" + data.receiverTS;
+		var parsel = data.sender + "-" + data.senderBranch + "-" + data.receiver+ "-" + data.receiverBranch;
 
     	$http.get('/add_parsel/'+parsel).success(function(output){
 			callback(output)
