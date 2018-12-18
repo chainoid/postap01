@@ -17,6 +17,11 @@ app.controller('appController', function($scope, appFactory){
 	$("#query_parsel").hide();
 	$("#history_parsel").hide();
 	$("#sender_parsels").hide();
+
+	$("#error_parsel_id").hide();
+	$("#error_delivered").hide();
+	$("#success_delivery").hide();
+	
 			
 	$scope.queryAllParsels = function(){
 
@@ -213,15 +218,23 @@ app.controller('appController', function($scope, appFactory){
 
 	$scope.deliveryParsel = function(){
 
-		appFactory.deliveryParsel($scope.holder, function(data){
+		appFactory.deliveryParsel($scope.parsel, function(data){
 			$scope.delivery_parsel = data;
-			if ($scope.delivery_parsel == "Error: no parsel found"){
-				$("#error_holder").show();
-				$("#success_holder").hide();
-			} else{
-				$("#success_holder").show();
-				$("#error_holder").hide();
-			}
+			
+			$("#error_parsel_id").hide();
+			$("#error_delivered").hide();
+			$("#success_delivery").show();
+
+			if ($scope.delivery_parsel == "Error: Parsel not found") {
+				$("#error_parsel_id").show();
+				$("#success_delivery").hide();
+				$("#error_delivered").hide();
+			} 
+			else if ($scope.delivery_parsel == "Error: Already delivered") {
+				$("#error_parsel_id").hide();
+				$("#success_delivery").hide();
+		    	$("#error_delivered").show();
+        		} 
 		});
 	}
 
@@ -256,9 +269,9 @@ app.factory('appFactory', function($http){
 
 	factory.deliveryParsel = function(data, callback){
 
-		var holder = data.id + "-" + data.receiverTS;
+		var parsel = data.id;
 
-    	$http.get('/delivery_parsel/'+holder).success(function(output){
+    	$http.get('/delivery_parsel/'+parsel).success(function(output){
 			callback(output)
 		});
 	}

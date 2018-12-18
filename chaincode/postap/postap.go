@@ -271,19 +271,30 @@ func (s *SmartContract) querySender(APIstub shim.ChaincodeStubInterface, args []
 */
 func (s *SmartContract) deliveryParsel(APIstub shim.ChaincodeStubInterface, args []string) sc.Response {
 
-	if len(args) != 2 {
-		return shim.Error("Incorrect number of arguments. Expecting 2")
+	if len(args) != 1 {
+		return shim.Error("Incorrect number of arguments. Expecting 1")
 	}
 
 	parselAsBytes, _ := APIstub.GetState(args[0])
 	if parselAsBytes == nil {
-		return shim.Error("Could not locate parsel")
+
+        fmt.Printf("- deliveryParsel with id: %s Parsel not found \n", args[0])
+
+		return shim.Error("Parsel not found")
 	}
 	parsel := Parsel{}
 
 	json.Unmarshal(parselAsBytes, &parsel)
 	// Normally check that the specified argument is a valid holder of parsel
 	// we are skipping this check for this example
+	
+	if parsel.ReceiverTS != "" {
+
+		fmt.Printf("- deliveryParsel with id: %s Already delivered \n", args[0])
+
+		return shim.Error("Already delivered")
+	}
+
 	parsel.ReceiverTS = time.Now().Format(time.RFC3339)
 
 	parselAsBytes, _ = json.Marshal(parsel)

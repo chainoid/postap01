@@ -466,10 +466,9 @@ return{
 	delivery_parsel: function(req, res){
 		console.log("put a timestamp, changing owner of parsel on delivery: ");
 
-		var array = req.params.holder.split("-");
+		var array = req.params.parsel.split("-");
 		var key = array[0]
-		var deliveryTS = array[1];
-
+		
 		var fabric_client = new Fabric_Client();
 
 		// setup the fabric network
@@ -510,13 +509,13 @@ return{
 		    tx_id = fabric_client.newTransactionID();
 		    console.log("Assigning transaction_id: ", tx_id._transaction_id);
 
-		    // deliveryParsel - requires 2 args , ex: args: ['1', '201921908999'],
+		    // deliveryParsel - requires 1 args , ex: args: ['201921908999'],
 		    // send proposal to endorser
 		    var request = {
 		        //targets : --- letting this default to the peers assigned to the channel
 		        chaincodeId: 'postap',
 		        fcn: 'deliveryParsel',
-		        args: [key, deliveryTS],
+		        args: [key],
 		        chainId: 'posta-channel',
 		        txId: tx_id
 		    };
@@ -532,7 +531,9 @@ return{
 		            isProposalGood = true;
 		            console.log('Transaction proposal was good');
 		        } else {
-		            console.error('Transaction proposal was bad');
+					console.error('Transaction proposal was bad');
+					console.error('proposalResponses' + proposalResponses);
+					
 		        }
 		    if (isProposalGood) {
 		        console.log(util.format(
@@ -592,7 +593,7 @@ return{
 		        
 		    } else {
 		        console.error('Failed to send Proposal or receive valid response. Response null or status is not 200. exiting...');
-		        res.send("Error: no parsel found");
+		        res.send(util.format("%s", proposalResponses));
 		        throw new Error('Failed to send Proposal or receive valid response. Response null or status is not 200. exiting...');
 		    }
 		}).then((results) => {
@@ -603,7 +604,7 @@ return{
 		        //res.json(tx_id.getTransactionID())
 		    } else {
 		        console.error('Failed to order the transaction. Error code: ' + response.status);
-		        res.send("Error: no parsel found");
+		        res.send("Parsel not found");
 		    }
 
 		    if(results && results[1] && results[1].event_status === 'VALID') {
@@ -614,7 +615,6 @@ return{
 		    }
 		}).catch((err) => {
 		    console.error('Failed to invoke successfully :: ' + err);
-		    //res.send("Error: no parsel found");
 		});
 
 	}
