@@ -43,6 +43,19 @@ type Parsel struct {
 }
 
 /*
+ *  The random Id generator 
+*/
+func randomId() string {
+
+	// Call Seed, using current nanoseconds.
+  rand.Seed(int64(time.Now().Nanosecond()))
+  // Random int will be different each program execution.
+  value := rand.Int63()
+
+ return  fmt.Sprintf("%X", value) 
+}
+
+/*
   * The Init method *
   called when the Smart Contract "posta-chaincode" is instantiated by the network
   * Best practice is to have any Ledger initialization in separate function
@@ -99,7 +112,7 @@ func (s *SmartContract) initLedger(APIstub shim.ChaincodeStubInterface) sc.Respo
 		fmt.Println("i is ", i)
 		parselAsBytes, _ := json.Marshal(parsel[i])
 
-		APIstub.PutState(fmt.Sprintf("%X", rand.Int()), parselAsBytes)
+		APIstub.PutState(randomId(), parselAsBytes)
 		fmt.Println("Added", parsel[i])
 		i = i + 1
 	}
@@ -123,6 +136,8 @@ func (s *SmartContract) queryParsel(APIstub shim.ChaincodeStubInterface, args []
 		return shim.Error("Could not locate parsel")
 	}
 
+	fmt.Printf("- queryParsel:\n%s\n", parselAsBytes)
+
 	return shim.Success(parselAsBytes)
 }
 
@@ -141,11 +156,13 @@ func (s *SmartContract) acceptParsel(APIstub shim.ChaincodeStubInterface, args [
 	var parsel = Parsel{Sender: args[0], SenderBranch: args[1], SenderTS: time.Now().Format(time.RFC3339), Receiver: args[2], ReceiverBranch: args[3], ReceiverTS: ""}
 
 	parselAsBytes, _ := json.Marshal(parsel)
-	err := APIstub.PutState(fmt.Sprintf("%X", rand.Int()), parselAsBytes)
+	err := APIstub.PutState(randomId(), parselAsBytes)
 
 	if err != nil {
 		return shim.Error(fmt.Sprintf("Failed to record new parsel: %s", args[0]))
 	}
+
+	fmt.Printf("- acceptParsel:\n%s\n", parselAsBytes)
 
 	return shim.Success(nil)
 }
@@ -303,7 +320,7 @@ func (s *SmartContract) deliveryParsel(APIstub shim.ChaincodeStubInterface, args
 		return shim.Error(fmt.Sprintf("Failed to change status of parsel: %s", args[0]))
 	}
 
-	fmt.Printf("- deliveryParsel completed:\n%s\n", parselAsBytes)
+	fmt.Printf("- deliveryParsel:\n%s\n", parselAsBytes)
 
 	return shim.Success(nil)
 }
