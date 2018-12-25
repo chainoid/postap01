@@ -32,8 +32,8 @@
         padding:15px;
       }
       header, .form-group{
-        margin-bottom: 2%;
-        margin-top:2%;
+        margin-bottom: 1%;
+        margin-top:1%;
        
       }
       .form-group{
@@ -84,7 +84,7 @@
         margin-right: 2%;
       }
       .alert-width{
-        width: 40%;
+        width: 50%;
       }
     </style>
   </head>
@@ -115,8 +115,8 @@
         </tr>
 
         <tr ng-repeat="parsel in all_parsels">
-          <td><a  href="" ng-model="query_parsel"   ng-click="showParselParams(parsel)" >{{parsel.Key}}</a></td> 
-          <td><a  href="" ng-model="sender_parsels" ng-click="showSenderParsels(parsel)">{{parsel.sender}}</a></td> 
+          <td><a href="" ng-model="query_parsel"   ng-click="showParselParams(parsel)" title="Details">{{parsel.Key}}</a></td> 
+          <td><a href="" ng-model="sender_parsels" ng-click="showSenderParsels(parsel)" title="All packages for this sender">{{parsel.sender}}</a></td> 
           <td>{{parsel.senderTS}}</td>
           <td>{{parsel.senderBranch}}</td> 
           <td>{{parsel.receiverBranch}}</td>
@@ -221,7 +221,7 @@
       <div class="form-group">
         <label>Accept: Create Inital Parsel Record</label>
        
-        <div class="alert alert-success alert-width" role="alert" id="success_create">
+        <div class="alert alert-success" role="alert" id="success_create">
           Success! Tx ID: {{accepted_parsel_id}}
         </div>
        
@@ -236,13 +236,13 @@
       <div class="form-group">
         <label>Delivery: Change Status of Parsel Item and add Delivery Timestamp</label><br>
        
-        <div class="alert alert-success alert-width" role="alert" id="success_delivery">
+        <div class="alert alert-success" role="alert" id="success_delivery">
           Success! Tx ID: {{delivery_parsel}}
         </div>
-        <div class="alert alert-danger alert-width" role="alert" id="error_parsel_id">
+        <div class="alert alert-danger" role="alert" id="error_parsel_id">
           Error: Please enter a valid Parsel Id
         </div>
-        <div class="alert alert-danger alert-width" role="alert" id="error_delivered">
+        <div class="alert alert-warning" role="alert" id="error_delivered">
           Error: This Parsel already delivered
         </div>
 
